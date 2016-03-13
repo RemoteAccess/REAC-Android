@@ -22,7 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.Home"></activity>
+        <activity
+            android:name=".activity.Home"
+            android:label="Home" />
+        <activity android:name=".activity.LogApplication"
+            android:label="Log Application"></activity>
     </application>
 
 </manifest>

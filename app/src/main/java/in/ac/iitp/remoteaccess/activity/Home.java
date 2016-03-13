@@ -3,6 +3,7 @@ package in.ac.iitp.remoteaccess.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,7 +13,8 @@ public class Home extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Intent in = getIntent();
@@ -24,5 +26,15 @@ public class Home extends AppCompatActivity {
         }
         TextView tv_user = (TextView) findViewById(R.id.user);
         tv_user.setText(in.getStringExtra(LoginActivity.INTENT_EMAIL));
+
+
+
+        findViewById(R.id.b_logapp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent in = new Intent(getApplicationContext(),LogApplication.class);
+                startActivity(in);
+            }
+        });
     }
 }
