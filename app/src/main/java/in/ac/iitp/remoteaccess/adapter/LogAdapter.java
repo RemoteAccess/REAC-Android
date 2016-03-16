@@ -10,6 +10,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import in.ac.iitp.remoteaccess.model.LogModel;
 
 import in.ac.iitp.remoteaccess.R;
@@ -42,9 +46,13 @@ public class LogAdapter extends ArrayAdapter<LogModel> {
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext,"Killing PID:"+data.getPID(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Killing PID:" + data.getPID(), Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        YoYo.with(Techniques.FadeInUp).duration(200).playOn(convertView);
+        Glide.with(this).loa
 
 
         return convertView;

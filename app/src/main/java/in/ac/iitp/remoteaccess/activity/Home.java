@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import in.ac.iitp.remoteaccess.R;
 
 public class Home extends AppCompatActivity {
@@ -32,9 +34,12 @@ public class Home extends AppCompatActivity {
         findViewById(R.id.b_logapp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent in = new Intent(getApplicationContext(),LogApplication.class);
+                Intent in = new Intent(getApplicationContext(), LogApplication.class);
                 startActivity(in);
             }
         });
+
+        Picasso picasso = Picasso.with(this).
+                load
     }
 }
