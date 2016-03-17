@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -11,6 +12,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +24,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import in.ac.iitp.remoteaccess.R;
+import in.ac.iitp.remoteaccess.utils.Constants;
+import in.ac.iitp.remoteaccess.utils.MyHttpClient;
 
 /**
  * A login screen that offers login via email/password.
@@ -30,14 +37,8 @@ public class LoginActivity extends AppCompatActivity  {
 
     public static final String INTENT_EMAIL = "email";
 
-
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world","gagan@iitp.ac.in:password"
-    };
-    private UserLoginTask mAuthTask = null;
-
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mUsernameView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -47,7 +48,7 @@ public class LoginActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mUsernameView = (EditText) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -81,16 +82,13 @@ public class LoginActivity extends AppCompatActivity  {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String email = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -105,12 +103,12 @@ public class LoginActivity extends AppCompatActivity  {
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!isUsernameValid(email)) {
+            mUsernameView.setError(getString(R.string.error_invalid_email));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -122,14 +120,13 @@ public class LoginActivity extends AppCompatActivity  {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            tryLogin(email, password);
         }
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isUsernameValid(String username) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return username.length()>0;
     }
 
     private boolean isPasswordValid(String password) {
@@ -173,66 +170,53 @@ public class LoginActivity extends AppCompatActivity  {
         }
     }
 
+    void tryLogin(final String email,String password)
+    {
+        ArrayList<Pair<String,String>> param = new ArrayList<>();
+        param.add(new Pair<String, String>("username",email));
+        param.add(new Pair<String, String>("password",password));
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+        MyHttpClient client = new MyHttpClient(Constants.BASE_URL + "/api/login", param, true, new  MyHttpClient.MyHttpClientListener() {
+            @Override
+            public void onPreExecute() {
 
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+            @Override
+            public void onFailed(Exception e) {
+                showProgress(false);
+                Snackbar.make(findViewById(android.R.id.content),
+                        "Error in Connection", Snackbar.LENGTH_INDEFINITE).show();
             }
 
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
+            @Override
+            public void onSuccess(Object output) {
+                String result = (String) output;
+                //Update AllIDS variable and saveSharedPref...............
+                if(result.equals("loggedIn"))
                 {
                     Intent in =new Intent(LoginActivity.this, Home.class);
-                    in.putExtra(INTENT_EMAIL, mEmail);
+                    in.putExtra(INTENT_EMAIL, email);
                     LoginActivity.this.startActivity(in);
-                }
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
 
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
+                }
+                else
+                {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Invalid Credentials!", Snackbar.LENGTH_SHORT).show();
+                }
+
+                showProgress(false);
+            }
+
+            @Override
+            public void onBackgroundSuccess(String result) {
+            Log.e("A******************", "AA" + result);
+
+            }
+        });
+
     }
+
 }
 

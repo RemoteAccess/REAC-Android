@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
@@ -51,8 +50,7 @@ public class LogAdapter extends ArrayAdapter<LogModel> {
         });
 
 
-        YoYo.with(Techniques.FadeInUp).duration(200).playOn(convertView);
-        Glide.with(this).loa
+        YoYo.with(Techniques.FadeIn).duration(100).playOn(convertView);
 
 
         return convertView;

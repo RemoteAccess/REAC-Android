@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 import in.ac.iitp.remoteaccess.R;
 
 public class Home extends AppCompatActivity {
@@ -39,7 +37,6 @@ public class Home extends AppCompatActivity {
             }
         });
 
-        Picasso picasso = Picasso.with(this).
-                load
+
     }
 }
