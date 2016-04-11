@@ -28,9 +28,15 @@
         android:id="@+id/tv_log_pid"
         android:paddingLeft="15dp"/>
     </LinearLayout>
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+   <ImageButton
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:id="@+id/b_log_close"
         android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+    <ImageButton
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:id="@+id/b_log_block"
+        android:src="@drawable/ic_block_black_36dp"/>
+
 </LinearLayout>

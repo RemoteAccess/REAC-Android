@@ -8,16 +8,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import in.ac.iitp.remoteaccess.R;
+import in.ac.iitp.remoteaccess.model.ClientSocket;
 
 public class Home extends AppCompatActivity {
 
-
+    ClientSocket clientSocket;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Intent in = getIntent();
+        clientSocket = ClientSocket.getInstance();
+        /* Intent in = getIntent();
         if(!in.hasExtra(LoginActivity.INTENT_EMAIL))
         {
             Toast.makeText(this, "No Data",Toast.LENGTH_SHORT).show();
@@ -26,7 +28,7 @@ public class Home extends AppCompatActivity {
         }
         TextView tv_user = (TextView) findViewById(R.id.user);
         tv_user.setText(in.getStringExtra(LoginActivity.INTENT_EMAIL));
-
+        */
 
 
         findViewById(R.id.b_logapp).setOnClickListener(new View.OnClickListener() {

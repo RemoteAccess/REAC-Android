@@ -27,6 +27,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import in.ac.iitp.remoteaccess.R;
+import in.ac.iitp.remoteaccess.utils.Client;
 import in.ac.iitp.remoteaccess.utils.Constants;
 import in.ac.iitp.remoteaccess.utils.MyHttpClient;
 
@@ -42,6 +43,10 @@ public class LoginActivity extends AppCompatActivity  {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+
+    private EditText mServerIPView;
+    private EditText mServerPasswordView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,20 @@ public class LoginActivity extends AppCompatActivity  {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        mServerIPView = (EditText) findViewById(R.id.server_ip);
+        mServerPasswordView= (EditText) findViewById(R.id.server_pass);
+
+        Button mLinkButton = (Button) findViewById(R.id.ip_direct_button);
+        mLinkButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptDirect();
+            }
+        });
+
+
+
     }
 
 
@@ -195,15 +214,14 @@ public class LoginActivity extends AppCompatActivity  {
                 //Update AllIDS variable and saveSharedPref...............
                 if(result.equals("loggedIn"))
                 {
-                    Intent in =new Intent(LoginActivity.this, Home.class);
-                    in.putExtra(INTENT_EMAIL, email);
+                    Intent in =new Intent(LoginActivity.this, Devices.class);
+                    //in.putExtra(INTENT_EMAIL, email);
                     LoginActivity.this.startActivity(in);
-
                 }
                 else
                 {
                     Snackbar.make(findViewById(android.R.id.content),
-                            "Invalid Credentials!", Snackbar.LENGTH_SHORT).show();
+                            "Invalid Credentials!\n"+result, Snackbar.LENGTH_SHORT).show();
                 }
 
                 showProgress(false);
@@ -211,10 +229,51 @@ public class LoginActivity extends AppCompatActivity  {
 
             @Override
             public void onBackgroundSuccess(String result) {
-            Log.e("A******************", "AA" + result);
-
+                    Log.e("******************", "AA" + result);
             }
         });
+
+    }
+
+
+
+    private void attemptDirect() {
+        String ip = mServerIPView.getText().toString();
+        String pass = mServerPasswordView.getText().toString();
+
+        Client client = new Client(this,ip){
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                showProgress(true);
+
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                super.onPostExecute(aBoolean);
+                if(aBoolean==null) {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Can't Connect!!!", Snackbar.LENGTH_SHORT).show();
+
+                } else                if(aBoolean!=true)
+                {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Invalid Details", Snackbar.LENGTH_SHORT).show();
+
+                }
+                else {
+                    Intent in =new Intent(LoginActivity.this, Home.class);
+                    LoginActivity.this.startActivity(in);
+
+                }
+                showProgress(false);
+
+
+            }
+        };
+        client.execute(pass);
 
     }
 
