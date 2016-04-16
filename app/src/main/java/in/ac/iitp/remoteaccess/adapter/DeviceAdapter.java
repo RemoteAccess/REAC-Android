@@ -19,6 +19,7 @@ import in.ac.iitp.remoteaccess.model.LogModel;
 /**
  * Created by scopeinfinity on 6/4/16.
  */
+
 public class DeviceAdapter extends ArrayAdapter<DeviceModel> {
     private Context mContext;
 
@@ -48,7 +49,7 @@ public class DeviceAdapter extends ArrayAdapter<DeviceModel> {
         });
 
 
-        YoYo.with(Techniques.Swing).duration(50).playOn(convertView);
+        //YoYo.with(Techniques.Swing).duration(50).playOn(convertView);
 
 
         return convertView;

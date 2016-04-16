@@ -6,13 +6,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.Map;
 
 import in.ac.iitp.remoteaccess.R;
+import in.ac.iitp.remoteaccess.adapter.DownloadAdapter;
+import in.ac.iitp.remoteaccess.model.LogModel;
+import in.ac.iitp.remoteaccess.utils.FetchSocket;
 
 public class Devices extends AppCompatActivity {
-
-    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,13 +26,7 @@ public class Devices extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
+
+
 }

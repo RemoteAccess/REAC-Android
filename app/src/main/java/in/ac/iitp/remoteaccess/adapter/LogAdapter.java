@@ -1,6 +1,10 @@
 package in.ac.iitp.remoteaccess.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Environment;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +18,15 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,19 +42,20 @@ import in.ac.iitp.remoteaccess.utils.FetchSocket;
  */
 public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<LogModel> {
 
-    private Context mContext;
+    private Activity mActivity;
     private ClientSocket socket;
-    private HashMap<LogModel, Integer> blockMap;
+    private HashMap<String, Integer> blockMap;
 
-    public LogAdapter(Context context, int resource) {
-        super(context, resource);
-        mContext = context;
+    public LogAdapter(Activity activity, int resource) {
+        super(activity, resource);
+        mActivity = activity;
         blockMap = new HashMap<>();
+        loadFile();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         convertView = inflater.inflate(R.layout.item_log_element, null);
 
@@ -54,7 +68,7 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
         tvAppName.setText(data.getAppName());
         tvPID.setText("PID : "+data.getPID());
         tvAppName.setText(data.getAppName());
-        if(blockMap.containsKey(data)) {
+        if(blockMap.containsKey(getBlockName(data))) {
             block.setImageResource(R.drawable.ic_thumb_up_black_36dp);
             tvPID.setText("BLOCKED");
 
@@ -71,18 +85,22 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
                     @Override
                     protected void onPostExecute(String s) {
                         if (s == null)
-                            Toast.makeText(mContext, "Error!", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                    "Error!", Snackbar.LENGTH_SHORT).show();
                         else {
                             if (s.startsWith("Status :")) {
                                 s = s.substring(8).trim();
                                 if (s.equals("0")) {
-                                    Toast.makeText(mContext, "Terminated Successfully", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                            "Terminated Successfully", Snackbar.LENGTH_SHORT).show();
                                     fetchList();
                                 } else {
-                                    Toast.makeText(mContext, "Terminatation Failed", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                            "Terminatation Failed", Snackbar.LENGTH_SHORT).show();
                                 }
                             } else {
-                                Toast.makeText(mContext, "Some Error Occured!", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                        "Some Error Occured!", Snackbar.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -95,30 +113,36 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
             @Override
             public void onClick(View v) {
 
-                if(blockMap.containsKey(data)) {
+                if(blockMap.containsKey(getBlockName(data))) {
 
                         FetchSocket fss = new FetchSocket() {
                             @Override
                             protected void onPostExecute(String s) {
                                 if (s == null)
-                                    Toast.makeText(mContext, "Error!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                            "Error!", Snackbar.LENGTH_SHORT).show();
                                 else {
                                     if (s.startsWith("Status :")) {
                                         s = s.substring(8).trim();
                                         if (s.equals("0")) {
-                                            Toast.makeText(mContext, "Unblocked", Toast.LENGTH_SHORT).show();
-                                            blockMap.remove(block);
+                                            Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                                    "Unblocked!", Snackbar.LENGTH_SHORT).show();
                                             fetchList();
                                         } else {
-                                            Toast.makeText(mContext, "Failed", Toast.LENGTH_SHORT).show();
+                                            Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                                    "Failed!", Snackbar.LENGTH_SHORT).show();
                                         }
+                                        blockMap.remove(getBlockName(data));
+                                        saveFile();
+
                                     } else {
-                                        Toast.makeText(mContext, "Some Error Occurred!", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                                "Some Error Occured!", Snackbar.LENGTH_SHORT).show();
                                     }
                                 }
                             }
                         };
-                        fss.execute("PIDKILL_" + blockMap.get(block) + "\r\n");
+                        fss.execute("PIDKILL_" +blockMap.get(getBlockName(data)) + "\r\n");
 
                 } else {
 
@@ -127,21 +151,26 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
                         @Override
                         protected void onPostExecute(String s) {
                             if (s == null)
-                                Toast.makeText(mContext, "Error!", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                        "Error!", Snackbar.LENGTH_SHORT).show();
                             else {
                                 if (s.startsWith("PID :")) {
                                     s = s.substring(5).trim();
+                                    Log.e("*******", "PID >>> " + s);
                                     int pid = Integer.parseInt(s);
-                                    blockMap.put(data,pid);
+                                    blockMap.put(getBlockName(data), pid);
+                                    saveFile();
                                     fetchList();
-                                    Toast.makeText(mContext, "Block Called!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                            "Block Called!", Snackbar.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(mContext, "Some Error Occurred!", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(mActivity.findViewById(android.R.id.content),
+                                            "Some Error Occured!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         }
                     };
-                    fss.execute("BLOCK_" + data.getPID() + "\r\n");
+                    fss.execute("BLOCK_" + getBlockName(data)  + "\r\n");
 
 
 
@@ -156,15 +185,19 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
         return convertView;
 
     }
-
-    public void fetchList() {
+    public  void fetchList(){
+        fetchList(false);
+    }
+    public void fetchList(final boolean closeAcitivity) {
 
 
         FetchSocket fetchSocket= new FetchSocket(){
             @Override
             protected void onPostExecute(String s) {
                 if(s==null) {
-                    Toast.makeText(mContext,"Error in Connection!!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity.getApplicationContext(),"Error in Connection!", Toast.LENGTH_SHORT).show();
+                    if(closeAcitivity)
+                      ;//  mActivity.finish();
                     return;
                 }
                 String[] words = s.split("!");
@@ -176,8 +209,8 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
                     //Toast.makeText(getApplicationContext(),"Added! : "+words[i,Toast.LENGTH_SHORT).show();
 
                 }
-                for (Map.Entry<LogModel, Integer> data: blockMap.entrySet()) {
-                    add(data.getKey());
+                for (Map.Entry<String, Integer> data: blockMap.entrySet()) {
+                    add(new LogModel(data.getKey(),-1));
 
                 }
                 sort(LogAdapter.this);
@@ -192,11 +225,60 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
     }
 
     public int compare(LogModel lhs, LogModel rhs) {
+        if(lhs.getPID()<0)
+            return Integer.MIN_VALUE;
+        if(rhs.getPID()<0)
+            return Integer.MAX_VALUE;
+
         int t = lhs.getAppName().compareTo(rhs.getAppName());
         if(t==0)
             return lhs.getPID()-rhs.getPID();
         return t;
     }
 
+    private String getBlockName(LogModel data) {
+        String name = data.getAppName();
+        if(name.lastIndexOf('/')>=0)
+            name = name.substring(name.lastIndexOf('/')+1);
+        return name;
 
+    }
+
+
+    private void saveFile() {
+        File data = new File(Environment.getDataDirectory(),"blockList");
+            try {
+                BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(data)));
+                for (Map.Entry<String, Integer> d: blockMap.entrySet()) {
+                   br.write(d.getKey()+"\n"+ d.getValue()+"\n");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+    }
+
+    private void loadFile() {
+        blockMap.clear();
+        File data = new File(Environment.getDataDirectory(),"blockList");
+        if(data.exists()) {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(data)));
+                String line = null;
+                while ((line = br.readLine())!=null) {
+                    String line2 = br.readLine();
+                    if(line2!=null) {
+                        blockMap.put(line,Integer.parseInt(line2));
+                    }
+                }
+                br.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

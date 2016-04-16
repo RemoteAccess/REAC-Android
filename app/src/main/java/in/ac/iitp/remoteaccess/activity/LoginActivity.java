@@ -3,7 +3,11 @@ package in.ac.iitp.remoteaccess.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 
@@ -24,9 +28,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 import in.ac.iitp.remoteaccess.R;
+import in.ac.iitp.remoteaccess.model.ClientSocket;
 import in.ac.iitp.remoteaccess.utils.Client;
 import in.ac.iitp.remoteaccess.utils.Constants;
 import in.ac.iitp.remoteaccess.utils.MyHttpClient;
@@ -48,10 +54,12 @@ public class LoginActivity extends AppCompatActivity  {
     private EditText mServerIPView;
     private EditText mServerPasswordView;
 
+    private Button bCancel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username);
 
@@ -81,6 +89,8 @@ public class LoginActivity extends AppCompatActivity  {
         mServerIPView = (EditText) findViewById(R.id.server_ip);
         mServerPasswordView= (EditText) findViewById(R.id.server_pass);
 
+        bCancel = (Button) findViewById(R.id.cancel);
+
         Button mLinkButton = (Button) findViewById(R.id.ip_direct_button);
         mLinkButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -89,8 +99,11 @@ public class LoginActivity extends AppCompatActivity  {
             }
         });
 
+        ClientSocket.loadCredential(this);
+        mServerIPView.setText(ClientSocket.getServer());
+        mServerPasswordView.setText(ClientSocket.getPassword());
 
-
+        autoLogin(this,this);
     }
 
 
@@ -181,6 +194,7 @@ public class LoginActivity extends AppCompatActivity  {
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
+
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
@@ -193,7 +207,7 @@ public class LoginActivity extends AppCompatActivity  {
     {
         ArrayList<Pair<String,String>> param = new ArrayList<>();
         param.add(new Pair<String, String>("username",email));
-        param.add(new Pair<String, String>("password",password));
+        param.add(new Pair<String, String>("password", password));
 
         MyHttpClient client = new MyHttpClient(Constants.BASE_URL + "/api/login", param, true, new  MyHttpClient.MyHttpClientListener() {
             @Override
@@ -205,7 +219,7 @@ public class LoginActivity extends AppCompatActivity  {
             public void onFailed(Exception e) {
                 showProgress(false);
                 Snackbar.make(findViewById(android.R.id.content),
-                        "Error in Connection", Snackbar.LENGTH_INDEFINITE).show();
+                        "Error in Connection", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
@@ -253,11 +267,12 @@ public class LoginActivity extends AppCompatActivity  {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 super.onPostExecute(aBoolean);
+                Log.e("************","FINALLY "+aBoolean);
                 if(aBoolean==null) {
                     Snackbar.make(findViewById(android.R.id.content),
                             "Can't Connect!!!", Snackbar.LENGTH_SHORT).show();
 
-                } else                if(aBoolean!=true)
+                } else if(aBoolean.equals(Boolean.FALSE))
                 {
                     Snackbar.make(findViewById(android.R.id.content),
                             "Invalid Details", Snackbar.LENGTH_SHORT).show();
@@ -265,8 +280,9 @@ public class LoginActivity extends AppCompatActivity  {
                 }
                 else {
                     Intent in =new Intent(LoginActivity.this, Home.class);
+                    in.putExtra("AfterLogin",true);
                     LoginActivity.this.startActivity(in);
-
+                    finish();
                 }
                 showProgress(false);
 
@@ -276,6 +292,66 @@ public class LoginActivity extends AppCompatActivity  {
         client.execute(pass);
 
     }
+
+    public static void autoLogin(final LoginActivity activity, final Context context) {
+        if(ClientSocket.getInstance()!=null) {
+            Socket socket = ClientSocket.getInstance().getSocket();
+            if(socket!=null)
+                if(socket.isConnected()) {
+                    if(activity==null) {
+                        Toast.makeText(context.getApplicationContext(),"Reconnected!",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Intent in =new Intent(activity, Home.class);
+                    activity.startActivity(in);
+                    activity.finish();
+                    return;
+                }
+        }
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        if(!sp.getBoolean("autoLogin",false))
+            return;
+        ClientSocket.loadCredential(context);
+
+        Client client = new Client(context,ClientSocket.getServer()){
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if(activity!=null)
+                    activity.showProgress(true);
+
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                super.onPostExecute(aBoolean);
+                Log.e("************","FINALLY "+aBoolean);
+                if(aBoolean==null) {
+                    Toast.makeText(context,"Can't Connect", Toast.LENGTH_SHORT).show();
+
+                } else if(aBoolean.equals(Boolean.FALSE))
+                {
+                    Toast.makeText(context,"Login Failed!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if(activity!=null) {
+                        Intent in = new Intent(activity, Home.class);
+                        activity.startActivity(in);
+                        activity.finish();
+                    } else {
+                        Toast.makeText(context,"Connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if(activity!=null)
+                    activity.showProgress(false);
+
+
+            }
+        };
+        client.execute(ClientSocket.getPassword());
+    }
+
 
 }
 

@@ -17,8 +17,13 @@ public class FetchSocket extends AsyncTask<String,Void,String> {
 
     private ClientSocket socket;
 
+    public FetchSocket() {
+        Log.e("*************","SOCKET CONS ");
+
+    }
     @Override
     protected String doInBackground(String... params) {
+        Log.e("*************","SOCKET DIB ");
         try {
             socket = ClientSocket.getInstance();
             Log.e("*************","SOCKET Connected : "+socket.isConnected());
@@ -46,7 +51,9 @@ public class FetchSocket extends AsyncTask<String,Void,String> {
                     }
                 });*/
                 if(finalL.startsWith("[[") && finalL.endsWith("]]"))
+                {
                     return finalL.substring(2,finalL.length()-2);
+                }
             }
             return null;
         } catch (IOException e) {

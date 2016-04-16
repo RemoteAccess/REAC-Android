@@ -109,4 +109,7 @@
     </string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_close">Close</string>
+    <string name="action_refreshconnection">Refresh Connection</string>
+    <string name="action_anotherdevice">Another Device</string>
 </resources>

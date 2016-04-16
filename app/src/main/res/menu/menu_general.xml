@@ -4,17 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="in.ac.iitp.remoteaccess.activity.Devices">
     <item
-        android:id="@+id/action_refresh"
+        android:id="@+id/action_anotherdevice"
         android:orderInCategory="100"
-        android:icon="@android:drawable/stat_notify_sync"
-        android:title="@string/action_refresh"
-        app:showAsAction="ifRoom" />
+        android:title="@string/action_anotherdevice"
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_refreshconnection"
         android:orderInCategory="100"
         android:title="@string/action_refreshconnection"
         app:showAsAction="never" />
-
     <item
         android:id="@+id/action_close"
         android:orderInCategory="100"
