@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -42,7 +46,7 @@ public class LogApplication extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_log_application,menu);
+        getMenuInflater().inflate(R.menu.menu_log_application, menu);
         return true;
     }
 
@@ -72,5 +76,12 @@ public class LogApplication extends AppCompatActivity {
 
         }
         return true;
+    }
+
+    public void checkBlankMSG() {
+        if(list.getCount()==0)
+            ((TextView)(findViewById(R.id.tv_blank))).setText("No IP Found!");
+        else
+            ((TextView)findViewById(R.id.tv_blank)).setText("Available REAC-Server IP");
     }
 }

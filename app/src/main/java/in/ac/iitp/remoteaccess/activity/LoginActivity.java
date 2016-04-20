@@ -25,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import in.ac.iitp.remoteaccess.R;
+import in.ac.iitp.remoteaccess.adapter.DeviceAdapter;
 import in.ac.iitp.remoteaccess.model.ClientSocket;
 import in.ac.iitp.remoteaccess.utils.Client;
 import in.ac.iitp.remoteaccess.utils.Constants;
@@ -45,8 +47,8 @@ public class LoginActivity extends AppCompatActivity  {
     public static final String INTENT_EMAIL = "email";
 
     // UI references.
-    private EditText mUsernameView;
-    private EditText mPasswordView;
+   // private EditText mUsernameView;
+    //private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -54,17 +56,18 @@ public class LoginActivity extends AppCompatActivity  {
     private EditText mServerIPView;
     private EditText mServerPasswordView;
 
-    private Button bCancel;
+    private DeviceAdapter deviceAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mUsernameView = (EditText) findViewById(R.id.username);
+        //    mUsernameView = (EditText) findViewById(R.id.username);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            //mPasswordView = (EditText) findViewById(R.id.password);
+            /*mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
@@ -82,14 +85,13 @@ public class LoginActivity extends AppCompatActivity  {
                 attemptLogin();
             }
         });
-
+        */
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
         mServerIPView = (EditText) findViewById(R.id.server_ip);
         mServerPasswordView= (EditText) findViewById(R.id.server_pass);
 
-        bCancel = (Button) findViewById(R.id.cancel);
 
         Button mLinkButton = (Button) findViewById(R.id.ip_direct_button);
         mLinkButton.setOnClickListener(new OnClickListener() {
@@ -103,6 +105,10 @@ public class LoginActivity extends AppCompatActivity  {
         mServerIPView.setText(ClientSocket.getServer());
         mServerPasswordView.setText(ClientSocket.getPassword());
 
+        deviceAdapter = new DeviceAdapter(this);
+
+
+        ((ListView)findViewById(R.id.list)).setAdapter(deviceAdapter);
         autoLogin(this,this);
     }
 
@@ -113,6 +119,7 @@ public class LoginActivity extends AppCompatActivity  {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+    /*
     private void attemptLogin() {
 
         // Reset errors.
@@ -165,6 +172,7 @@ public class LoginActivity extends AppCompatActivity  {
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+    */
 
     /**
      * Shows the progress UI and hides the login form.
@@ -352,6 +360,16 @@ public class LoginActivity extends AppCompatActivity  {
         client.execute(ClientSocket.getPassword());
     }
 
+    public void fillIP(String IP) {
+        mServerIPView.setText(IP);
+    }
+
+    public void checkBlankMSG() {
+        if(deviceAdapter.getCount()==0)
+            (findViewById(R.id.tv_blank)).setVisibility(View.VISIBLE);
+        else
+            (findViewById(R.id.tv_blank)).setVisibility(View.GONE);
+    }
 
 }
 

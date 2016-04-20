@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import in.ac.iitp.remoteaccess.activity.LogApplication;
 import in.ac.iitp.remoteaccess.model.ClientSocket;
 import in.ac.iitp.remoteaccess.model.LogModel;
 
@@ -42,11 +43,11 @@ import in.ac.iitp.remoteaccess.utils.FetchSocket;
  */
 public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<LogModel> {
 
-    private Activity mActivity;
+    private LogApplication mActivity;
     private ClientSocket socket;
     private HashMap<String, Integer> blockMap;
 
-    public LogAdapter(Activity activity, int resource) {
+    public LogAdapter(LogApplication activity, int resource) {
         super(activity, resource);
         mActivity = activity;
         blockMap = new HashMap<>();
@@ -209,6 +210,8 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
                     //Toast.makeText(getApplicationContext(),"Added! : "+words[i,Toast.LENGTH_SHORT).show();
 
                 }
+                mActivity.checkBlankMSG();
+
                 for (Map.Entry<String, Integer> data: blockMap.entrySet()) {
                     add(new LogModel(data.getKey(),-1));
 

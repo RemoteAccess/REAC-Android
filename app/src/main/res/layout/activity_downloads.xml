@@ -9,6 +9,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="in.ac.iitp.remoteaccess.activity.Downloads">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Downloadable File!"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:id="@+id/tv_blank"/>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

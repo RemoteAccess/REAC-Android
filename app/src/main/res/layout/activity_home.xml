@@ -69,6 +69,8 @@
                 card_view:cardCornerRadius="4dp"
                 android:layout_margin="5dp"
                 android:id="@+id/b_logapp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 android:layout_width="match_parent"
                 card_view:cardBackgroundColor="#FFF"
                 android:layout_height="wrap_content"
@@ -78,10 +80,10 @@
                     android:orientation="vertical"
                     android:layout_height="wrap_content">
                     <ImageView
-                        android:layout_width="128dp"
+                        android:layout_width="match_parent"
                         android:layout_height="128dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/data"/>
+                        android:src="@drawable/log"/>
                     <TextView
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
@@ -102,6 +104,8 @@
                 android:layout_width="match_parent"
                 card_view:cardBackgroundColor="#FFF"
                 android:id="@+id/b_lock"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 android:layout_height="wrap_content"
                 >
                 <LinearLayout
@@ -110,10 +114,10 @@
                     android:layout_height="wrap_content">
                     <ImageView
                         android:layout_alignParentRight="true"
-                        android:layout_width="128dp"
+                        android:layout_width="match_parent"
                         android:layout_height="128dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/logout"/>
+                        android:src="@drawable/lockscreen"/>
                     <TextView
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentBottom="true"
@@ -133,6 +137,8 @@
                 android:layout_margin="5dp"
                 android:id="@+id/b_upload"
                 android:layout_width="match_parent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 card_view:cardBackgroundColor="#FFF"
                 android:layout_height="wrap_content"
                 >
@@ -142,7 +148,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <ImageView
-                        android:layout_width="128dp"
+                        android:layout_width="match_parent"
                         android:layout_height="128dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/upload"/>
@@ -165,6 +171,8 @@
                 android:layout_margin="5dp"
                 android:id="@+id/b_shared"
                 android:layout_width="match_parent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 card_view:cardBackgroundColor="#FFF"
                 android:layout_height="wrap_content"
                 >
@@ -174,10 +182,10 @@
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_alignParentRight="true"
-                    android:layout_width="128dp"
+                    android:layout_width="match_parent"
                     android:layout_height="128dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/shared"/>
+                    android:src="@drawable/download"/>
                 <TextView
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"

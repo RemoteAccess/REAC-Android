@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,14 +47,17 @@ public class Downloads extends AppCompatActivity {
                    // finish();
                     return;
                 }
-                Log.e("*****************","Downlaods : "+s);
-                String[] words = s.split("/");
+                Log.e("*****************", "Downlaods : " + s);
                 adapter.clear();
-                for (int i=0;i<words.length;i++) {
-                    adapter.add(words[i]);
-                    //Toast.makeText(getApplicationContext(),"Added! : "+words[i,Toast.LENGTH_SHORT).show();
+                if(!s.trim().isEmpty()) {
+                    String[] words = s.split("/");
+                    for (int i = 0; i < words.length; i++) {
+                        adapter.add(words[i]);
+                        //Toast.makeText(getApplicationContext(),"Added! : "+words[i,Toast.LENGTH_SHORT).show();
 
+                    }
                 }
+                checkBlankMSG();
 
             }
         };
@@ -92,5 +96,12 @@ public class Downloads extends AppCompatActivity {
 
         }
         return true;
+    }
+
+    public void checkBlankMSG() {
+        if(listView.getCount()==0)
+            (findViewById(R.id.tv_blank)).setVisibility(View.VISIBLE);
+        else
+            (findViewById(R.id.tv_blank)).setVisibility(View.GONE);
     }
 }
