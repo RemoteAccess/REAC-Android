@@ -78,10 +78,11 @@ public class LogApplication extends AppCompatActivity {
         return true;
     }
 
+
     public void checkBlankMSG() {
         if(list.getCount()==0)
-            ((TextView)(findViewById(R.id.tv_blank))).setText("No IP Found!");
+            (findViewById(R.id.tv_blank)).setVisibility(View.VISIBLE);
         else
-            ((TextView)findViewById(R.id.tv_blank)).setText("Available REAC-Server IP");
+            (findViewById(R.id.tv_blank)).setVisibility(View.GONE);
     }
 }

@@ -171,7 +171,7 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
                             }
                         }
                     };
-                    fss.execute("BLOCK_" + getBlockName(data)  + "\r\n");
+                    fss.execute("BLOCK_" + getBlockName(data)  + "\n\r");
 
 
 
@@ -243,7 +243,7 @@ public class LogAdapter extends ArrayAdapter<LogModel> implements Comparator<Log
         String name = data.getAppName();
         if(name.lastIndexOf('/')>=0)
             name = name.substring(name.lastIndexOf('/')+1);
-        return name;
+        return name.trim();
 
     }
 

@@ -366,9 +366,9 @@ public class LoginActivity extends AppCompatActivity  {
 
     public void checkBlankMSG() {
         if(deviceAdapter.getCount()==0)
-            (findViewById(R.id.tv_blank)).setVisibility(View.VISIBLE);
+            ((TextView)(findViewById(R.id.tv_blank))).setText("No IP Found!");
         else
-            (findViewById(R.id.tv_blank)).setVisibility(View.GONE);
+            ((TextView)findViewById(R.id.tv_blank)).setText("Available REAC-Server IP");
     }
 
 }
